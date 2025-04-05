@@ -40,8 +40,6 @@ func _connect_signals() -> void:
 
 func play_music(track_name: String, fade: bool = true) -> void:
 	if music_tracks.has(track_name):
-		if fade:
-			music_player.fade_in(2.0)
 		music_player.stream = music_tracks[track_name]
 		music_player.play()
 

@@ -129,7 +129,7 @@ func setup_click_counter():
 func randomize_wander():
 	wander_direction = Vector2(randf_range(-1, 1), randf_range(-1, 1)).normalized()
 	wander_timer = randf_range(1.0, 3.0)
-	print("DEBUG: New wander direction: ", wander_direction)
+	#print("DEBUG: New wander direction: ", wander_direction)
 
 func _process(delta):
 	# Update state change timer
@@ -200,7 +200,7 @@ func check_aggression(delta):
 		# SIGNIFICANT INCREASE to aggression chance - was too subtle before
 		var current_aggression_chance = aggression_chance * delta * (2.0 + player_near_timer * 2.0)
 		
-		print("DEBUG: Checking aggression with chance: ", current_aggression_chance)
+		#print("DEBUG: Checking aggression with chance: ", current_aggression_chance)
 		
 		if randf() < current_aggression_chance:
 			print("DEBUG: Becoming aggressive. Chance was: ", current_aggression_chance)
@@ -268,8 +268,8 @@ func process_cute_state(delta):
 		velocity = wander_direction * wander_speed
 		
 		# Debug logging for wandering behavior
-		if velocity.length() > 20:
-			print("DEBUG: Wandering in CUTE state, direction: ", wander_direction)
+		#if velocity.length() > 20:
+			#print("DEBUG: Wandering in CUTE state, direction: ", wander_direction)
 	
 	# Apply the velocity
 	move_and_slide()
@@ -282,7 +282,7 @@ func process_spikey_state(delta):
 		
 		# Calculate distance to player
 		var distance = global_position.distance_to(player.global_position)
-		print("DEBUG: SPIKEY state chasing player, distance: ", distance)
+		#print("DEBUG: SPIKEY state chasing player, distance: ", distance)
 		
 		if Engine.get_frames_drawn() % 120 == 0:
 			print("DEBUG: Still in SPIKEY state, velocity: ", velocity)
@@ -367,7 +367,7 @@ func process_attached_state(delta):
 
 # Updated process_fleeing_state function to fix scaling issues
 func process_fleeing_state(delta):
-	print("DEBUG: Processing FLEEING state, timer: ", fleeing_timer)
+	#print("DEBUG: Processing FLEEING state, timer: ", fleeing_timer)
 	
 	# Apply high velocity decay to make movement more pronounced
 	velocity = velocity * 0.95
@@ -382,7 +382,7 @@ func process_fleeing_state(delta):
 		# Apply a strong fleeing force
 		if distance < flee_distance * 2:  # Wider range for fleeing
 			velocity = flee_direction * flee_speed
-			print("DEBUG: Fleeing from player, velocity: ", velocity)
+			#print("DEBUG: Fleeing from player, velocity: ", velocity)
 		else:
 			# Still flee but with reduced speed when farther away
 			velocity = flee_direction * flee_speed * 0.7

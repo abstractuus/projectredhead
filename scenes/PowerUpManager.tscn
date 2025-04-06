@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://doah3obqcmp6j"]
+
+[ext_resource type="Script" uid="uid://dc4xrf3tjxcrg" path="res://scenes/power_up_manager.gd" id="1_p2sk5"]
+[ext_resource type="PackedScene" uid="uid://dpp25mglxxwcc" path="res://scenes/power_up.tscn" id="2_bobjs"]
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource("1_p2sk5")
+power_up_scene = ExtResource("2_bobjs")
+auto_spawn = false

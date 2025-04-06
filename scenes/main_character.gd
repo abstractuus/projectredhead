@@ -17,6 +17,13 @@ extends CharacterBody2D
 @export var show_aim_line: bool = true         # Show aiming line when dragging
 @export var aim_line_thickness: float = 3.0    # Thickness of aim line for better visibility
 
+# Special attack parameters - UPDATED VALUES
+@export var special_attack_radius: float = 100.0     # Radius of the attack
+@export var special_attack_charge_time: float = 0.5   # REDUCED from 1.5 to 0.5 seconds
+@export var special_attack_damage: int = 2           # Damage dealt by the special attack
+@export var special_attack_cooldown: float = 5     # REDUCED from 3.0 to 2.0 seconds
+@export var min_charge_threshold: float = 0.1        # REDUCED from 0.2 to 0.1 (10%)
+
 # Private variables
 var drag_start: Vector2 = Vector2.ZERO
 var dragging: bool = false
@@ -30,7 +37,20 @@ var can_move: bool = true
 var initial_scale: Vector2
 var trail: Line2D
 
+# Private variables for special attack
+var special_attack_charging: bool = false
+var current_charge: float = 0.0
+var cooldown_timer: float = 0.0
+var can_special_attack: bool = true
+var attack_ready: bool = false
+
+# Special attack visual elements
+var charge_indicator: Node2D
+var attack_area_effect: Node2D
+var cooldown_progress: ProgressBar
+
 func _ready():
+	print("DEBUG: Player character initializing")
 	# Store original scale for deformation
 	initial_scale = scale
 	
@@ -46,6 +66,10 @@ func _ready():
 	# Create trail
 	if trail_enabled:
 		setup_trail()
+	
+	# Setup special attack visuals
+	setup_special_attack_visuals()
+	print("DEBUG: Player character initialized successfully")
 
 func setup_aim_line():
 	# Create line for aiming
@@ -104,6 +128,65 @@ func setup_trail():
 	# Add trail to parent deferred
 	get_parent().call_deferred("add_child", trail)
 
+func setup_special_attack_visuals():
+	print("DEBUG: Setting up special attack visuals")
+	# Create a node for the charge indicator
+	charge_indicator = Node2D.new()
+	charge_indicator.name = "ChargeIndicator"
+	add_child(charge_indicator)
+	
+	# Create a circular charge indicator
+	var charge_circle = DrawingUtils.create_circle(special_attack_radius, Color(0.1, 0.5, 1.0, 0.3))
+	charge_indicator.add_child(charge_circle)
+	charge_indicator.visible = false
+	
+	# Create attack area effect node (will be shown when attack is released)
+	attack_area_effect = Node2D.new()
+	attack_area_effect.name = "AttackAreaEffect"
+	add_child(attack_area_effect)
+	
+	# Add visual effect for the attack
+	var attack_circle = DrawingUtils.create_circle(special_attack_radius, Color(0.3, 0.8, 1.0, 0.6))
+	attack_area_effect.add_child(attack_circle)
+	attack_area_effect.visible = false
+	
+	# Set up cooldown UI
+	setup_cooldown_ui()
+	print("DEBUG: Special attack visuals setup complete")
+
+func setup_cooldown_ui():
+	print("DEBUG: Setting up cooldown UI")
+	# Create a ProgressBar for the cooldown
+	var ui_container = CanvasLayer.new()
+	ui_container.name = "UIContainer"
+	add_child(ui_container)
+	
+	cooldown_progress = ProgressBar.new()
+	cooldown_progress.name = "CooldownProgress"
+	cooldown_progress.set_position(Vector2(20, 20))
+	cooldown_progress.set_size(Vector2(100, 20))
+	cooldown_progress.max_value = 100
+	cooldown_progress.value = 100
+	cooldown_progress.visible = false
+	
+	ui_container.add_child(cooldown_progress)
+	print("DEBUG: Cooldown UI setup complete")
+
+func create_progress_texture(color: Color) -> ImageTexture:
+	# Use a simple solid square texture instead of a circle
+	var size = 32
+	var img = Image.new()
+	
+	# Create with explicit size and format
+	img.create(size, size, false, Image.FORMAT_RGBA8)
+	
+	# Simply fill the entire image with the color
+	img.fill(color)
+	
+	# Create texture from image
+	var texture = ImageTexture.create_from_image(img)
+	return texture
+	
 func _process(delta):
 	# Update momentum cooldown
 	if momentum_cooldown > 0:
@@ -118,6 +201,32 @@ func _process(delta):
 	# Update aim line while dragging
 	if dragging and show_aim_line:
 		update_aim_line()
+		
+	# Handle special attack cooldown
+	if !can_special_attack:
+		cooldown_timer -= delta
+		if cooldown_timer <= 0:
+			print("DEBUG: Special attack cooldown complete")
+			can_special_attack = true
+			cooldown_progress.visible = false
+		else:
+			# Update cooldown UI
+			var cooldown_percent = (1 - (cooldown_timer / special_attack_cooldown)) * 100
+			cooldown_progress.value = cooldown_percent
+	
+	# Handle charging logic
+	if special_attack_charging:
+		current_charge += delta
+		# Update charge indicator size
+		var charge_ratio = min(1.0, current_charge / special_attack_charge_time)
+		charge_indicator.scale = Vector2(charge_ratio, charge_ratio)
+		
+		# If fully charged, indicate ready
+		if current_charge >= special_attack_charge_time and !attack_ready:
+			attack_ready = true
+			print("DEBUG: Special attack fully charged!")
+			# Visual feedback for full charge
+			charge_indicator.modulate = Color(1.0, 0.5, 0.0, 0.6)
 
 func _physics_process(delta):
 	if !can_move:
@@ -161,6 +270,18 @@ func _input(event):
 	# Update drag position
 	if event is InputEventMouseMotion and dragging:
 		pass  # The line updates are handled in _process
+		
+	# Special attack input
+	if event is InputEventKey and can_move:
+		if event.keycode == KEY_SPACE:
+			if event.pressed and can_special_attack:
+				# Start charging
+				print("DEBUG: Space pressed - starting special attack charge")
+				start_charging()
+			elif !event.pressed and special_attack_charging:
+				# Release attack
+				print("DEBUG: Space released - releasing special attack")
+				release_special_attack()
 
 func update_aim_line():
 	var current_pos = get_global_mouse_position()
@@ -284,6 +405,141 @@ func update_visual_effects(delta):
 				var pulse = sin(Time.get_ticks_msec() * 0.001) * 0.02
 				scale = scale.lerp(initial_scale * (1.0 + pulse), 0.1)
 
+# Special attack functions
+func start_charging():
+	print("DEBUG: Starting special attack charge")
+	special_attack_charging = true
+	current_charge = 0.0
+	attack_ready = false
+	charge_indicator.visible = true
+	charge_indicator.scale = Vector2(0.1, 0.1)
+	charge_indicator.modulate = Color(0.1, 0.5, 1.0, 0.3)
+
+func release_special_attack():
+	# Only proceed if we were charging
+	if !special_attack_charging:
+		print("DEBUG: Not charging, can't release")
+		return
+
+	print("DEBUG: Releasing special attack")
+	special_attack_charging = false
+	charge_indicator.visible = false
+
+	# Calculate attack strength based on charge time
+	var charge_ratio = min(1.0, current_charge / special_attack_charge_time)
+	var attack_power = special_attack_damage * charge_ratio
+
+	print("DEBUG: Charge ratio: ", charge_ratio, ", Attack power: ", attack_power)
+
+	# Minimum attack power threshold - USE NEW PARAMETER
+	if charge_ratio < min_charge_threshold:  # Reduced to 10%
+		print("DEBUG: Special attack charge too low, canceling")
+		return  # Cancel the attack if charge is too low
+
+	# Visual effect for the attack
+	show_attack_effect(charge_ratio)
+
+	# Detect and damage enemies in range
+	var attack_radius = special_attack_radius * charge_ratio
+	print("DEBUG: Attack radius: ", attack_radius)
+	var enemies_in_range = get_enemies_in_range(attack_radius)
+	print("DEBUG: Found ", enemies_in_range.size(), " enemies in range")
+
+	for enemy in enemies_in_range:
+		if enemy.has_method("take_damage"):
+			print("DEBUG: Applying damage to enemy: ", enemy.name)
+			enemy.take_damage(round(attack_power))
+		else:
+			print("DEBUG: Enemy doesn't have take_damage method: ", enemy.name)
+
+	# Apply cooldown
+	can_special_attack = false
+	cooldown_timer = special_attack_cooldown
+	cooldown_progress.visible = true
+	cooldown_progress.value = 0
+	# Only proceed if we were charging
+	if !special_attack_charging:
+		print("DEBUG: Not charging, can't release")
+		return
+	
+	print("DEBUG: Releasing special attack")
+	special_attack_charging = false
+	charge_indicator.visible = false
+	
+	# Calculate attack strength based on charge time
+	charge_ratio = min(1.0, current_charge / special_attack_charge_time)
+	attack_power = special_attack_damage * charge_ratio
+	
+	print("DEBUG: Charge ratio: ", charge_ratio, ", Attack power: ", attack_power)
+	
+	# Minimum attack power threshold
+	if charge_ratio < 0.2:  # If charge is less than 20%
+		print("DEBUG: Special attack charge too low, canceling")
+		return  # Cancel the attack if charge is too low
+	
+	# Visual effect for the attack
+	show_attack_effect(charge_ratio)
+	
+	# Detect and damage enemies in range
+	attack_radius = special_attack_radius * charge_ratio
+	print("DEBUG: Attack radius: ", attack_radius)
+	enemies_in_range = get_enemies_in_range(attack_radius)
+	print("DEBUG: Found ", enemies_in_range.size(), " enemies in range")
+	
+	for enemy in enemies_in_range:
+		if enemy.has_method("take_damage"):
+			print("DEBUG: Applying damage to enemy: ", enemy.name)
+			enemy.take_damage(round(attack_power))
+		else:
+			print("DEBUG: Enemy doesn't have take_damage method: ", enemy.name)
+	
+	# Apply cooldown
+	can_special_attack = false
+	cooldown_timer = special_attack_cooldown
+	cooldown_progress.visible = true
+	cooldown_progress.value = 0
+	
+	# Play attack sound
+	# If you have the AudioFramework set up
+	# AudioManager.play_sfx("player_attack_" + str(1 + randi() % 3))
+
+func show_attack_effect(charge_ratio):
+	print("DEBUG: Showing attack effect with charge ratio: ", charge_ratio)
+	# Set size based on charge ratio
+	attack_area_effect.scale = Vector2(charge_ratio, charge_ratio)
+	attack_area_effect.visible = true
+	
+	# Create a tween for the attack effect
+	var tween = create_tween()
+	tween.tween_property(attack_area_effect, "scale", Vector2(charge_ratio * 1.2, charge_ratio * 1.2), 0.2)
+	tween.tween_property(attack_area_effect, "scale", Vector2(charge_ratio, charge_ratio), 0.1)
+	tween.tween_property(attack_area_effect, "modulate:a", 0.0, 0.3)
+	
+	# Connect to the tween's finished signal to hide the effect
+	tween.finished.connect(func():
+		attack_area_effect.visible = false
+		attack_area_effect.modulate.a = 1.0
+		print("DEBUG: Attack effect animation complete")
+	)
+
+func get_enemies_in_range(range_radius):
+	var enemies = []
+	
+	# Get all nodes in the "enemy" group and check if they're within range
+	var potential_enemies = get_tree().get_nodes_in_group("enemy")
+	print("DEBUG: Found ", potential_enemies.size(), " potential enemies in 'enemy' group")
+	
+	for enemy in potential_enemies:
+		var distance = global_position.distance_to(enemy.global_position)
+		if distance <= range_radius:
+			print("DEBUG: Enemy ", enemy.name, " is within range (distance: ", distance, ")")
+			enemies.append(enemy)
+		else:
+			print("DEBUG: Enemy ", enemy.name, " is out of range (distance: ", distance, ")")
+	
+	print("DEBUG: Total enemies within attack radius: ", enemies.size())
+	return enemies
+
 # Public functions for gameplay integration
 
 func disable_movement():
@@ -305,12 +561,14 @@ func clear_trail():
 
 func apply_speed_boost(multiplier: float, duration: float):
 	# Implement for power-ups
+	print("DEBUG: Applying speed boost with multiplier ", multiplier, " for ", duration, " seconds")
 	var original_momentum_bonus = max_momentum_bonus
 	max_momentum_bonus *= multiplier
 	
 	# Reset after duration
 	await get_tree().create_timer(duration).timeout
 	max_momentum_bonus = original_momentum_bonus
+	print("DEBUG: Speed boost expired")
 
 func _unhandled_input(event):
 	# Test damage with T key
@@ -318,3 +576,20 @@ func _unhandled_input(event):
 		if has_node("PlayerStats"):
 			get_node("PlayerStats").take_damage(1)
 			print("Test damage applied")
+
+# Utility class for drawing shapes
+class DrawingUtils:
+	static func create_circle(radius, color):
+		# Create a custom Circle2D class instance
+		var circle = Circle2D.new()
+		circle.radius = radius
+		circle.color = color
+		return circle
+
+# Custom class for drawing circles
+class Circle2D extends Node2D:
+	var radius: float = 10.0
+	var color: Color = Color.WHITE
+
+	func _draw():
+		draw_circle(Vector2.ZERO, radius, color)

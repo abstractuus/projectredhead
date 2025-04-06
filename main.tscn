@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://dl02wskjytnuh"]
+[gd_scene load_steps=9 format=3 uid="uid://dl02wskjytnuh"]
 
 [ext_resource type="Texture2D" uid="uid://b1mjoght4dadw" path="res://assets/temp/Pink.png" id="1_1bvp3"]
 [ext_resource type="Texture2D" uid="uid://b5qi2va142n18" path="res://assets/temp/Terrain (16x16).png" id="2_lquwl"]
 [ext_resource type="PackedScene" uid="uid://b8ccpl4yqjk6e" path="res://scenes/main_character.tscn" id="3_7mycd"]
 [ext_resource type="PackedScene" uid="uid://cntmqdh7u34x6" path="res://scenes/pathogen.tscn" id="4_lquwl"]
-[ext_resource type="Script" uid="uid://8pscgtf2xff4" path="res://health_bar.gd" id="5_lquwl"]
+[ext_resource type="Script" uid="uid://d3mxw6r0lbsha" path="res://scenes/game_ui.gd" id="5_7mycd"]
+[ext_resource type="PackedScene" uid="uid://doah3obqcmp6j" path="res://scenes/PowerUpManager.tscn" id="6_272bh"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5vw27"]
 texture = ExtResource("2_lquwl")
@@ -191,11 +192,7 @@ position = Vector2(73, 119)
 position = Vector2(258, 87)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+script = ExtResource("5_7mycd")
 
-[node name="ProgressBar" type="ProgressBar" parent="CanvasLayer"]
-offset_left = 10.0
-offset_top = 5.0
-offset_right = 155.0
-offset_bottom = 32.0
-rounded = true
-script = ExtResource("5_lquwl")
+[node name="PowerUpManager" parent="." instance=ExtResource("6_272bh")]
+position = Vector2(-27, 44)

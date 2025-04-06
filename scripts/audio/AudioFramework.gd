@@ -1,6 +1,6 @@
 ## AudioFramework
 ## 
-## Contributor(s): mixieculez (05-Apr-2025)
+## Contributor(s): mixieculez (05-Apr-2025), wanderinglostsoul44 (06-Apr-2025)
 ## Some contributions by GitHub Copilot
 ## 
 ## 

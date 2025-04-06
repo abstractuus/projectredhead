@@ -1,9 +1,9 @@
 [gd_scene load_steps=6 format=3 uid="uid://b8ccpl4yqjk6e"]
 
-[ext_resource type="Script" uid="uid://dbenh6oaop2fo" path="res://scenes/main_character.gd" id="1_e6tc2"]
+[ext_resource type="Script" uid="uid://bw3smwtsbynwe" path="res://scenes/main_character.gd" id="1_e6tc2"]
 [ext_resource type="Texture2D" uid="uid://7chyenh3f3rg" path="res://assets/sprites/player/hemo.png" id="1_nrcqd"]
-[ext_resource type="Script" uid="uid://mtkg1lb12i51" path="res://scenes/hit_box.gd" id="2_ig48j"]
-[ext_resource type="Script" uid="uid://dgxpd2bd82mis" path="res://scenes/player_stats.gd" id="4_k0aba"]
+[ext_resource type="Script" uid="uid://c66tuw51k6jlu" path="res://scenes/hit_box.gd" id="2_ig48j"]
+[ext_resource type="Script" uid="uid://smt4tdawhrf2" path="res://scenes/player_stats.gd" id="4_k0aba"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ig48j"]
 radius = 9.05539
@@ -13,7 +13,6 @@ script = ExtResource("1_e6tc2")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
-scale = Vector2(0.1, 0.1)
 texture = ExtResource("1_nrcqd")
 
 [node name="HitBox" type="Area2D" parent="."]

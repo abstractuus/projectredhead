@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://4p8phvrf5w3l" path="res://assets/tilesheets/brainlevel/BG Synapses Tilemap.png" id="4_4c57u"]
 [ext_resource type="PackedScene" uid="uid://cntmqdh7u34x6" path="res://scenes/pathogen.tscn" id="4_lquwl"]
 [ext_resource type="Texture2D" uid="uid://dsbh1puooxxwk" path="res://assets/tilesheets/brainlevel/MG Neurosynapses.png" id="5_4c57u"]
-[ext_resource type="Script" uid="uid://cjmfwraqmw2cc" path="res://scenes/game_ui.gd" id="5_7mycd"]
+[ext_resource type="Script" uid="uid://d3mxw6r0lbsha" path="res://scenes/game_ui.gd" id="5_7mycd"]
 [ext_resource type="Texture2D" uid="uid://dadvvmhf1nn1u" path="res://assets/tilesheets/brainlevel/Border.png" id="5_kek77"]
 [ext_resource type="PackedScene" uid="uid://doah3obqcmp6j" path="res://scenes/PowerUpManager.tscn" id="6_272bh"]
 [ext_resource type="Texture2D" uid="uid://w4i7t0bm4nid" path="res://assets/tilesheets/brainlevel/Obstacles.png" id="7_efxa6"]
@@ -848,18 +848,30 @@ sources/0 = SubResource("TileSetAtlasSource_4c57u")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ycdy4"]
 texture = ExtResource("7_efxa6")
-7:3/0 = 0
 8:3/0 = 0
+8:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, 2.86875, 8, 2.86875, 8, 8, -8, 8)
 6:9/0 = 0
+6:9/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, -3.36336, -8, -2.86875)
 7:9/0 = 0
+7:9/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, -3.36336, -8, -2.6709)
 8:9/0 = 0
+8:9/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, -2.76982, -8, -3.26444)
 9:9/0 = 0
+9:9/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 6.13318, -8, 6.03426, -3.06659, -8, -3.06659)
 2:10/0 = 0
+2:10/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8.80408, -3.46228, -8, -2.86875)
 3:10/0 = 0
+3:10/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, -3.66013, -8, -3.06659)
 12:10/0 = 0
+12:10/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, -2.65507, -8, -2.754, -8, -3.24861, 8, -8, 8)
 12:11/0 = 0
+12:11/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, -3.06659, -8, -2.96767, 8, -8, 8)
+7:3/0 = 0
+7:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, 2.86875, 8, 3.26443, 8, 8, -8, 8)
 
 [sub_resource type="TileSet" id="TileSet_w48qg"]
+physics_layer_0/collision_layer = 1
+physics_layer_0/collision_priority = 0.1
 sources/0 = SubResource("TileSetAtlasSource_ycdy4")
 
 [node name="Node" type="Node"]

@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://dvkfwuwrb4oxm"
+path="res://.godot/imported/brain_tilesheets.ase-d94222085e7fe3ecd5ea463bbed0624d.res"
+
+[deps]
+
+source_file="res://assets/tilesheets/brainlevel/brain_tilesheets.ase"
+dest_files=["res://.godot/imported/brain_tilesheets.ase-d94222085e7fe3ecd5ea463bbed0624d.res"]
+
+[params]
+

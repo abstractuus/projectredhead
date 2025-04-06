@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://dl02wskjytnuh"]
+[gd_scene load_steps=8 format=3 uid="uid://dl02wskjytnuh"]
 
 [ext_resource type="Texture2D" uid="uid://b1mjoght4dadw" path="res://assets/temp/Pink.png" id="1_1bvp3"]
 [ext_resource type="Texture2D" uid="uid://b5qi2va142n18" path="res://assets/temp/Terrain (16x16).png" id="2_lquwl"]
 [ext_resource type="PackedScene" uid="uid://b8ccpl4yqjk6e" path="res://scenes/main_character.tscn" id="3_7mycd"]
+[ext_resource type="PackedScene" uid="uid://cntmqdh7u34x6" path="res://scenes/pathogen.tscn" id="4_lquwl"]
 [ext_resource type="Script" uid="uid://8pscgtf2xff4" path="res://health_bar.gd" id="5_lquwl"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5vw27"]
@@ -168,6 +169,7 @@ sources/0 = SubResource("TileSetAtlasSource_5vw27")
 [node name="Node" type="Node"]
 
 [node name="TextureRect" type="TextureRect" parent="."]
+visible = false
 texture_filter = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -182,8 +184,11 @@ tile_set = SubResource("TileSet_kek77")
 format = 2
 layer_0/tile_data = PackedInt32Array(0, 1114112, 4, 65536, 1114112, 5, 131072, 1114112, 5, 196608, 1114112, 5, 262144, 1114112, 5, 327680, 1114112, 5, 393216, 1114112, 5, 458752, 1114112, 5, 524288, 1114112, 5, 589824, 1114112, 5, 655360, 1114112, 5, 720896, 1114112, 6, 720897, 1179648, 6, 720898, 1179648, 6, 720899, 1179648, 6, 720900, 1179648, 6, 720901, 1179648, 6, 720902, 1179648, 6, 720903, 1179648, 6, 720904, 1179648, 6, 720905, 1179648, 6, 720906, 1179648, 6, 720907, 1179648, 6, 720908, 1179648, 6, 720909, 1179648, 6, 720910, 1179648, 6, 720911, 1179648, 6, 720912, 1179648, 6, 720913, 1179648, 6, 720914, 1179648, 6, 720915, 1179648, 6, 720916, 1245184, 6, 655380, 1245184, 5, 589844, 1245184, 5, 524308, 1245184, 5, 458772, 1245184, 5, 393236, 1245184, 5, 327700, 1245184, 5, 262164, 1245184, 5, 196628, 1245184, 5, 131092, 1245184, 5, 65556, 1245184, 5, 20, 1245184, 4, 19, 1179648, 4, 18, 1179648, 4, 17, 1179648, 4, 16, 1179648, 4, 15, 1179648, 4, 14, 1179648, 4, 13, 1179648, 4, 12, 1179648, 4, 11, 1179648, 4, 10, 1179648, 4, 9, 1179648, 4, 8, 1179648, 4, 7, 1179648, 4, 6, 1179648, 4, 5, 1179648, 4, 4, 1179648, 4, 1, 1179648, 4, 2, 1179648, 4, 3, 1179648, 4)
 
-[node name="CharacterBody2D" parent="." instance=ExtResource("3_7mycd")]
-position = Vector2(36, 158)
+[node name="Player" parent="." instance=ExtResource("3_7mycd")]
+position = Vector2(73, 119)
+
+[node name="Pathogen" parent="." instance=ExtResource("4_lquwl")]
+position = Vector2(258, 87)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 

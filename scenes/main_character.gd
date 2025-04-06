@@ -266,6 +266,7 @@ func _input(event):
 				# Only launch if dragged far enough
 				if drag_distance > min_drag_distance:
 					launch(drag_start, drag_end)
+					AudioManager.play_sfx("player_swim")
 	
 	# Update drag position
 	if event is InputEventMouseMotion and dragging:

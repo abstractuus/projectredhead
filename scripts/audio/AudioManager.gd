@@ -51,8 +51,10 @@ var ui_sound: Dictionary = {
 
 ## Dictionary containing preloaded music track resources
 var music_sound: Dictionary = {
-	"bone_ambient": preload("res://assets/audio/music/bone_ambient.ogg"),
-	"brain_ambient": preload("res://assets/audio/music/brain_ambient.ogg")
+	"bone_music": preload("res://assets/audio/music/bone_music.ogg"),
+	"brain_music": preload("res://assets/audio/music/brain_music.ogg"),
+	"body_ambient": preload("res://assets/audio/music/body_ambient.ogg"),
+	"gut_ambient": preload("res://assets/audio/music/gut_ambient.ogg")
 }
 
 ## Lifecycle Methods

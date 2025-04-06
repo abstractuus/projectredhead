@@ -3,7 +3,6 @@
 ## Contributor(s): mixieculez (05-Apr-2025)
 ## Some contributions by GitHub Copilot
 ## 
-## 
 ## A centralized audio management system for handling different audio types
 ## in Abstractus Games Ludum Dare 57 title 'Hemoknight'
 ##
@@ -28,129 +27,153 @@ const UI_BUS: String = "UI"          # UI interaction sounds
 @onready var ui_player: AudioStreamPlayer = $UIPlayer        # For UI sounds
 
 ## Dictionary containing preloaded player sound resources
-## Keys should be descriptive names, values are filepath
+## Keys should be descriptive names, values are filepath or dictionary for varied sounds
 var sfx_sound: Dictionary = {
-	"player_attack_1": preload("res://assets/audio/sfx/player/player_attack_1.ogg"),
-	"player_attack_2": preload("res://assets/audio/sfx/player/player_attack_2.ogg"),
-	"player_attack_3": preload("res://assets/audio/sfx/player/player_attack_3.ogg"),
-	"player_swim": {
-		"varied": true,
-		"files": [
-			preload("res://assets/audio/sfx/player/swim_1.ogg"),
-			preload("res://assets/audio/sfx/player/swim_2.ogg"),
-			preload("res://assets/audio/sfx/player/swim_3.ogg"),
-			preload("res://assets/audio/sfx/player/swim_4.ogg")
-		]
-	}
+    "player_attack_1": preload("res://assets/audio/sfx/player/player_attack_1.ogg"),
+    "player_attack_2": preload("res://assets/audio/sfx/player/player_attack_2.ogg"),
+    "player_attack_3": preload("res://assets/audio/sfx/player/player_attack_3.ogg"),
+    "player_swim": {
+        "varied": true,
+        "files": [
+            preload("res://assets/audio/sfx/player/swim_1.ogg"),
+            preload("res://assets/audio/sfx/player/swim_2.ogg"),
+            preload("res://assets/audio/sfx/player/swim_3.ogg"),
+            preload("res://assets/audio/sfx/player/swim_4.ogg")
+        ]
+    }
 }
 
 ## Dictionary containing preloaded UI sound resources
-## Keys should be descriptive names, values are filepath
 var ui_sound: Dictionary = {
-	"ui_seek": preload("res://assets/audio/sfx/ui/ui_seek.ogg"),
-	"ui_select": preload("res://assets/audio/sfx/ui/ui_select.ogg")
+    "ui_seek": preload("res://assets/audio/sfx/ui/ui_seek.ogg"),
+    "ui_select": preload("res://assets/audio/sfx/ui/ui_select.ogg")
 }
 
 ## Dictionary containing preloaded music track resources
-## Keys should be track names, values are filepath
 var music_sound: Dictionary = {
-	# Add music tracks here
-	# Examples:
-	# "main_theme": preload("res://assets/audio/music/calm_flow.ogg"),
-	# "battle": preload("res://assets/audio/music/infection_combat.ogg"),
+    "main_theme": preload("res://assets/audio/music/calm_flow.ogg"),
+    "battle": preload("res://assets/audio/music/infection_combat.ogg")
 }
 
 ## Lifecycle Methods
 ## -------------------------------------------------------
 
-## Initializes the node with process mode set to always
-## This allows audio to continue playing even when the game is paused
 func _init() -> void:
-	process_mode = Node.PROCESS_MODE_ALWAYS
+    process_mode = Node.PROCESS_MODE_ALWAYS
 
-## Called when the node enters the scene tree
-## Sets up the audio buses and connects signals
 func _ready() -> void:
-	_setup_audio_buses()
-	_connect_signals()
+    _setup_audio_buses()
+    _connect_signals()
 
 ## Configuration Methods
 ## -------------------------------------------------------
 
-## Configures the default volume levels for audio buses
 func _setup_audio_buses() -> void:
-	AudioServer.set_bus_volume_db(AudioServer.get_bus_index(MASTER_BUS), 0.0)
-	AudioServer.set_bus_volume_db(AudioServer.get_bus_index(MUSIC_BUS), -5.0)
-	AudioServer.set_bus_volume_db(AudioServer.get_bus_index(SFX_BUS), 0.0)
-	AudioServer.set_bus_volume_db(AudioServer.get_bus_index(UI_BUS), 0.0)  # Added missing UI bus
+    AudioServer.set_bus_volume_db(AudioServer.get_bus_index(MASTER_BUS), 0.0)
+    AudioServer.set_bus_volume_db(AudioServer.get_bus_index(MUSIC_BUS), -5.0)
+    AudioServer.set_bus_volume_db(AudioServer.get_bus_index(SFX_BUS), 0.0)
+    AudioServer.set_bus_volume_db(AudioServer.get_bus_index(UI_BUS), 0.0)
 
-## Connects signals for audio player events
-## Can be extended to handle audio event callbacks
 func _connect_signals() -> void:
-	# Connect signals for audio player events if needed
-	# Example: music_player.connect("finished", Callable(self, "_on_music_finished"))
-	pass
+    music_player.connect("finished", Callable(self, "_on_music_finished"))
 
 ## Audio Playback Methods
 ## -------------------------------------------------------
 
-## Plays a music track by name
-##
-## @param track_name - The name of the track to play (key in music_sound dictionary)
 func play_music(track_name: String) -> void:
-	if music_sound.has(track_name):
-		music_player.stream = music_sound[track_name]
-		music_player.play()
+    if music_sound.has(track_name):
+        music_player.stream = music_sound[track_name]
+        music_player.play()
+    else:
+        push_warning("Music track '%s' not found in music_sound dictionary" % track_name)
 
-## Stops the currently playing music track
 func stop_music() -> void:
-	music_player.stop()
-## Plays a sound effect by name
-##
-## @param sound_name - The name of the sound to play (key in sound_effects dictionary)
-func play_sfx(sound_name: String) -> void:
-	if sfx_sound.has(sound_name):
-		if sfx_sound[sound_name] is Dictionary and sfx_sound[sound_name].get("varied", true):
-			# Randomly select a sound from the files array
-			var files = sfx_sound[sound_name]["files"]
-			sfx_player.stream = files[randi() % files.size()]
-		else:
-			sfx_player.stream = sfx_sound[sound_name]
-		sfx_player.play()
+    music_player.stop()
 
-## Plays a UI sound by name
-##
-## @param sound_name - The name of the UI sound to play (key in sound_effects dictionary)
+func play_sfx(sound_name: String) -> void:
+    if sfx_sound.has(sound_name):
+        if sfx_sound[sound_name] is Dictionary and sfx_sound[sound_name].get("varied", true):
+            var files = sfx_sound[sound_name]["files"]
+            sfx_player.stream = files[randi() % files.size()]
+        else:
+            sfx_player.stream = sfx_sound[sound_name]
+        sfx_player.play()
+    else:
+        push_warning("SFX '%s' not found in sfx_sound dictionary" % sound_name)
+
 func play_ui(sound_name: String) -> void:
-	if ui_sound.has(sound_name):
-		if ui_sound[sound_name] is Dictionary and ui_sound[sound_name].get("varied", true):
-			# Randomly select a sound from the files array
-			var files = ui_sound[sound_name]["files"]
-			ui_player.stream = files[randi() % files.size()]
-		else:
-			ui_player.stream = ui_sound[sound_name]
-			ui_player.play()
+    if ui_sound.has(sound_name):
+        if ui_sound[sound_name] is Dictionary and ui_sound[sound_name].get("varied", true):
+            var files = ui_sound[sound_name]["files"]
+            ui_player.stream = files[randi() % files.size()]
+        else:
+            ui_player.stream = ui_sound[sound_name]
+        ui_player.play()  # Moved outside if-else to play in both cases
+    else:
+        push_warning("UI sound '%s' not found in ui_sound dictionary" % sound_name)
 
 ## Volume Control Methods
 ## -------------------------------------------------------
 
-## Sets the volume of a specific audio bus
-##
-## @param bus_name - The name of the bus to adjust (e.g., "Master", "Music")
-## @param volume_db - The volume in decibels to set
 func set_bus_volume(bus_name: String, volume_db: float) -> void:
-	var bus_index: int = AudioServer.get_bus_index(bus_name)
-	AudioServer.set_bus_volume_db(bus_index, volume_db)
+    var bus_index: int = AudioServer.get_bus_index(bus_name)
+    AudioServer.set_bus_volume_db(bus_index, volume_db)
 
-## Sets the volume of a specific audio bus as a percentage (0-100)
-##
-## @param bus_name - The name of the bus to adjust 
-## @param volume_percent - The volume as a percentage (0-100)
 func set_bus_volume_percent(bus_name: String, volume_percent: float) -> void:
-	volume_percent = clamp(volume_percent, 0.0, 100.0)
-	# Convert percentage to decibels (logarithmic scale)
-	# -80dB is used as the minimum audible level (practically silent)
-	var volume_db: float = linear_to_db(volume_percent / 100.0)
-	if volume_percent == 0:
-		volume_db = -80.0  # Effectively mute
-	set_bus_volume(bus_name, volume_db)
+    volume_percent = clamp(volume_percent, 0.0, 100.0)
+    var volume_db: float = linear_to_db(volume_percent / 100.0)
+    if volume_percent == 0:
+        volume_db = -80.0  # Effectively mute
+    set_bus_volume(bus_name, volume_db)
+
+func get_bus_volume_percent(bus_name: String) -> float:
+    var bus_index: int = AudioServer.get_bus_index(bus_name)
+    var volume_db: float = AudioServer.get_bus_volume_db(bus_index)
+    if volume_db <= -80.0:
+        return 0.0
+    return db_to_linear(volume_db) * 100.0
+
+## Signal Handlers
+## -------------------------------------------------------
+
+func _on_music_finished() -> void:
+    if music_player.stream:
+        music_player.play()  # Loop the current track
+
+## Optional Enhancements (Uncomment to Use)
+## -------------------------------------------------------
+
+# func fade_out_music(duration: float) -> void:
+# 	var tween = create_tween()
+# 	tween.tween_property(music_player, "volume_db", -80.0, duration)
+# 	tween.tween_callback(music_player.stop)
+
+# var sfx_players: Array[AudioStreamPlayer] = []
+# var max_sfx_players: int = 5
+#
+# func _ready() -> void:
+# 	for i in range(max_sfx_players):
+# 		var player = AudioStreamPlayer.new()
+# 		player.bus = SFX_BUS
+# 		add_child(player)
+# 		sfx_players.append(player)
+# 	_setup_audio_buses()
+# 	_connect_signals()
+#
+# func play_sfx(sound_name: String, volume_db: float = 0.0, pitch: float = 1.0) -> void:
+# 	if sfx_sound.has(sound_name):
+# 		var stream: AudioStream
+# 		if sfx_sound[sound_name] is Dictionary and sfx_sound[sound_name].get("varied", true):
+# 			var files = sfx_sound[sound_name]["files"]
+# 			stream = files[randi() % files.size()]
+# 		else:
+# 			stream = sfx_sound[sound_name]
+# 		for player in sfx_players:
+# 			if not player.playing:
+# 				player.stream = stream
+# 				player.volume_db = volume_db
+# 				player.pitch_scale = pitch
+# 				player.play()
+# 				return
+# 	else:
+# 		push_warning("SFX '%s' not found in sfx_sound dictionary" % sound_name)
